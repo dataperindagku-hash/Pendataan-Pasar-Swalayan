@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Pendataan Pelaku Usaha - Kota Baubau</title>
+  <title>Portal Pendataan Pelaku Usaha - Akses Bebas</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root { --identity-green: #1B5E20; --identity-yellow: #F57F17; --bg-light: #F4F7F6;}
@@ -38,43 +38,15 @@
 <div class="container my-4" style="max-width: 650px;">
 
   <!-- ========================================== -->
-  <!-- SCREEN 1: LOGIN AREA                       -->
+  <!-- SCREEN 1: DASHBOARD AREA                   -->
   <!-- ========================================== -->
-  <div id="loginScreen" class="card shadow border-0 rounded-4">
-    <div class="card-header bg-green text-center py-4 rounded-top-4">
-      <h4 class="mb-1 fw-bold text-white">Portal Pendataan</h4>
-      <p class="mb-0 small" style="color: #A5D6A7;">Dinas Perdagangan Kota Baubau</p>
-    </div>
-    <div class="card-body p-4 p-md-5">
-      <h5 class="fw-bold text-success mb-4 text-center">🔐 Otentikasi Petugas</h5>
-      <div class="mb-3">
-        <label class="form-label fw-bold text-secondary mb-2 small">NIP / Username:</label>
-        <input type="text" id="inputUsername" class="form-control modern-input" placeholder="Masukkan NIP Anda">
-      </div>
-      <div class="mb-4">
-        <label class="form-label fw-bold text-secondary mb-2 small">Password:</label>
-        <input type="password" id="inputPassword" class="form-control modern-input" placeholder="Masukkan Password">
-      </div>
-      <div class="d-grid">
-        <button type="button" id="btnLogin" class="btn btn-yellow p-3" onclick="prosesLogin()">Masuk ke Dashboard 🚀</button>
-      </div>
-      <div id="loginAlert" class="alert mt-4 d-none" role="alert"></div>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- SCREEN 2: DASHBOARD AREA                   -->
-  <!-- ========================================== -->
-  <div id="dashboardScreen" class="d-none">
+  <div id="dashboardScreen">
     <!-- Header Greeting -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <p class="mb-0 text-muted" id="teksSapaanWaktu">Selamat pagi,</p>
-        <h4 class="fw-bold text-green mb-0" id="teksNamaPengguna">Nama Pimpinan</h4>
-        <span class="badge bg-success mt-1" id="teksBidang">Bidang</span>
-      </div>
-      <div>
-        <button class="btn btn-outline-danger btn-sm rounded-pill fw-bold" onclick="prosesLogout()">Keluar 🚪</button>
+        <h4 class="fw-bold text-green mb-0" id="teksNamaPengguna">Petugas Lapangan</h4>
+        <span class="badge bg-warning text-dark mt-1" id="teksBidang">Akses Bebas</span>
       </div>
     </div>
 
@@ -82,7 +54,7 @@
     <div class="mading-box mb-4 shadow-sm">
       <div class="fw-bold text-green mb-1" style="font-size: 13px;">📢 Papan Informasi Digital</div>
       <marquee direction="left" scrollamount="5" class="text-secondary small fw-semibold" id="teksMading">
-        Selamat bekerja! Pastikan data lapangan diinput dengan valid dan akurat. Hati-hati di jalan.
+        Selamat bekerja! Sistem beroperasi dalam Mode Bebas tanpa login.
       </marquee>
     </div>
 
@@ -118,7 +90,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 3: PILIH MODUL AREA                 -->
+  <!-- SCREEN 2: PILIH MODUL AREA                 -->
   <!-- ========================================== -->
   <div id="moduleScreen" class="card shadow border-0 rounded-4 d-none">
     <div class="card-body p-4 p-md-5 text-center">
@@ -141,7 +113,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 4: FORMULIR DINAMIS                 -->
+  <!-- SCREEN 3: FORMULIR DINAMIS                 -->
   <!-- ========================================== -->
   <div id="loadingFormArea" class="my-5 text-center d-none">
     <div class="spinner-border text-success" role="status"></div>
@@ -194,20 +166,11 @@
   // ==========================================
   const API_URL = "https://script.google.com/macros/s/AKfycbxoabOhILmnKHBElWFFGr3qIjmpRWVouvdGOW5YGEXke6Fnr0udZ5FCBVg4K0YhhGMZ/exec";
 
-  // Variabel Sesi Login
-  let USER_AKTIF = "";
-  let BIDANG_AKTIF = "";
+  // Konfigurasi Akun Bebas
+  let USER_AKTIF = "Petugas Lapangan";
   let NAMA_MODUL_AKTIF = "";
 
-  // Aturan Hak Akses Modul
-  const aturanHakAkses = {
-    "Pendataan Usaha Perdagangan": ["Bidang Perdagangan"],
-    "Pendataan Pedagang Pasar": ["Bidang Perdagangan", "Bidang Usaha Perdagangan"],
-    "Pendataan IKM": ["Bidang Industri"],
-    "Pendataan Pasar Swalayan": ["Bidang Perdagangan"]
-  };
-
-  // Data Referensi
+  // Data Referensi Wilayah
   const dataWilayah = {
     "Betoambari": ["Katobengke", "Labalawa", "Lipu", "Sulaa", "Waborobo"],
     "Murhum": ["Baadia", "Melai", "Wajo", "Lamangga", "Tanganapada"],
@@ -225,70 +188,11 @@
 
   document.addEventListener("DOMContentLoaded", function() {
     initGPS();
+    aturSapaanWaktu();
   });
 
   // ==========================================
-  // LOGIKA LAYAR 1: LOGIN (OTENTIKASI)
-  // ==========================================
-  function prosesLogin() {
-    const user = document.getElementById('inputUsername').value;
-    const pass = document.getElementById('inputPassword').value;
-    const alertBox = document.getElementById('loginAlert');
-
-    if (!user || !pass) {
-      tampilkanPesanAlert(alertBox, 'NIP dan Password wajib diisi!', 'warning');
-      return;
-    }
-
-    const btn = document.getElementById('btnLogin');
-    btn.disabled = true;
-    btn.innerText = "Mengecek ke Server...";
-    alertBox.classList.add('d-none');
-
-    const loginUrl = `${API_URL}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
-
-    fetch(loginUrl)
-            .then(res => res.json())
-            .then(data => {
-              if (data.status === "sukses") {
-                // Set Sesi
-                USER_AKTIF = data.nama_petugas;
-                BIDANG_AKTIF = data.bidang;
-
-                // Siapkan Dashboard
-                aturSapaanWaktu();
-                document.getElementById('teksNamaPengguna').innerText = USER_AKTIF;
-                document.getElementById('teksBidang').innerText = BIDANG_AKTIF;
-
-                // Pindah Layar
-                document.getElementById('loginScreen').classList.add('d-none');
-                document.getElementById('dashboardScreen').classList.remove('d-none');
-              } else {
-                tampilkanPesanAlert(alertBox, data.pesan || 'Akses ditolak! Kredensial tidak valid.', 'danger');
-              }
-            })
-            .catch(err => {
-              tampilkanPesanAlert(alertBox, 'Koneksi gagal. Cek jaringan internet Anda.', 'danger');
-            })
-            .finally(() => {
-              btn.disabled = false;
-              btn.innerText = "Masuk ke Dashboard 🚀";
-            });
-  }
-
-  function prosesLogout() {
-    if(confirm("Apakah Anda yakin ingin keluar?")) {
-      USER_AKTIF = ""; BIDANG_AKTIF = ""; NAMA_MODUL_AKTIF = "";
-      document.getElementById('inputPassword').value = "";
-      document.getElementById('dashboardScreen').classList.add('d-none');
-      document.getElementById('moduleScreen').classList.add('d-none');
-      document.getElementById('formScreen').classList.add('d-none');
-      document.getElementById('loginScreen').classList.remove('d-none');
-    }
-  }
-
-  // ==========================================
-  // LOGIKA LAYAR 2: DASHBOARD
+  // LOGIKA DASHBOARD & NAVIGASI
   // ==========================================
   function aturSapaanWaktu() {
     const jam = new Date().getHours();
@@ -310,22 +214,15 @@
     document.getElementById('formScreen').classList.add('d-none');
     document.getElementById('loadingFormArea').classList.add('d-none');
     document.getElementById('dashboardScreen').classList.remove('d-none');
+    window.scrollTo(0,0);
   }
 
   // ==========================================
-  // LOGIKA LAYAR 3 & 4: PILIH MODUL & MUAT FORM
+  // LOGIKA PILIH MODUL & MUAT FORM
   // ==========================================
   function verifikasiModulDanMuat() {
     const modul = document.getElementById('moduleSelector').value;
     if (!modul) { alert("Pilih modul pendataan terlebih dahulu!"); return; }
-
-    const bidangYangDiizinkan = aturanHakAkses[modul] || [];
-
-    // Admin bypass
-    if (!bidangYangDiizinkan.includes(BIDANG_AKTIF) && BIDANG_AKTIF !== "Admin") {
-      alert(`AKSES DITOLAK!\n\nModul "${modul}" bukan wewenang ${BIDANG_AKTIF}.`);
-      return;
-    }
 
     NAMA_MODUL_AKTIF = modul;
 
@@ -358,7 +255,7 @@
   }
 
   // ==========================================
-  // RENDERING FORM (SAMA SEPERTI SEBELUMNYA)
+  // RENDERING FORM
   // ==========================================
   function renderFormFields(fields) {
     const container = document.getElementById('fieldsContainer');
@@ -551,7 +448,7 @@
               if (data.status === "Sukses") {
                 alert(data.pesan || 'Sukses! Laporan Tersimpan.');
                 formElement.reset();
-                kembaliKeDashboard(); // Lempar kembali ke dashboard
+                kembaliKeDashboard();
                 if(isCanvasActive) clearCanvas();
                 window.scrollTo(0,0);
               } else {
