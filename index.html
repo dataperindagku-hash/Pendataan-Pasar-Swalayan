@@ -3,529 +3,578 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Pendataan Pelaku Usaha - Akses Bebas</title>
+  <title>Dashboard PerindagKU - Bebas Akses</title>
+  
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome untuk Ikon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
-    :root { --identity-green: #1B5E20; --identity-yellow: #F57F17; --bg-light: #F4F7F6;}
-    body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-    /* Utility Classes */
+    :root { 
+      --identity-green: #1B5E20; 
+      --identity-yellow: #F57F17; 
+      --bg-light: #F4F7F6;
+    }
+    body { 
+      background-color: var(--bg-light); 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      padding-bottom: 80px; 
+    }
+    
+    /* Utility & Header */
     .bg-green { background-color: var(--identity-green); color: white; }
     .text-green { color: var(--identity-green); }
-    .btn-green { background-color: var(--identity-green); color: white; border-radius: 25px; transition: 0.3s;}
-    .btn-green:hover { background-color: #144d18; color: white; }
-    .btn-yellow { background-color: var(--identity-yellow); color: white; border-radius: 25px; font-weight: bold; transition: 0.3s;}
-    .btn-yellow:hover { background-color: #e67300; color: white; }
-    .btn-preview { background-color: #1976D2; color: white; border-radius: 20px; }
-    .modern-input { background-color: #FAFAFA; border: 2px solid #E0E0E0; border-radius: 20px; padding: 12px 15px; }
-    #signature-pad { border: 2px dashed #ccc; border-radius: 20px; cursor: crosshair; background-color: #fafafa; }
-
-    /* Dashboard Cards */
-    .stat-card { border-radius: 16px; border: none; padding: 20px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .stat-total { background: linear-gradient(135deg, #1B5E20, #2E7D32); }
+    .header-app { background: linear-gradient(135deg, #1B5E20, #2E7D32); padding: 20px 20px 30px; border-radius: 0 0 25px 25px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .modern-input { background-color: #FAFAFA; border: 2px solid #E0E0E0; border-radius: 12px; padding: 12px 15px; }
+    
+    /* Mading Box */
+    .mading-box { background-color: #E8F5E9; border-left: 5px solid var(--identity-green); padding: 12px; border-radius: 8px; cursor: pointer; margin-top: -20px; position: relative; z-index: 10;}
+    
+    /* Stat Cards */
+    .stat-card { border-radius: 16px; padding: 15px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s;}
+    .stat-card:hover { transform: translateY(-3px); }
+    .stat-total { background: linear-gradient(135deg, #1B5E20, #4CAF50); }
     .stat-server { background: linear-gradient(135deg, #0D47A1, #1976D2); }
     .stat-draft { background: linear-gradient(135deg, #E65100, #F57F17); }
-    .mading-box { background-color: #E8F5E9; border-left: 5px solid var(--identity-green); padding: 12px; border-radius: 8px; }
-
-    /* FAB (Floating Action Button) */
-    .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 1000; }
-    .fab-btn { background-color: var(--identity-yellow); color: white; border: none; border-radius: 50px; padding: 15px 25px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;}
+    
+    /* Horizontal Scroll (IG Feed) */
+    .horizontal-scroll { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+    .horizontal-scroll::-webkit-scrollbar { height: 6px; }
+    .horizontal-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    
+    /* IG Card */
+    .ig-card { min-width: 260px; height: 250px; border-radius: 16px; position: relative; overflow: hidden; scroll-snap-align: start; box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer;}
+    .ig-card img { width: 100%; height: 100%; object-fit: cover; }
+    .ig-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 20px 15px 15px; color: white; }
+    .ig-caption { font-size: 12px; font-weight: bold; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    /* FAB & Bottom Nav */
+    .fab-container { position: fixed; bottom: 90px; right: 20px; z-index: 1000; }
+    .fab-btn { background-color: var(--identity-yellow); color: white; border: none; border-radius: 50px; padding: 15px 25px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; display: flex; align-items: center; gap: 8px;}
     .fab-btn:hover { background-color: #e67300; transform: scale(1.05); }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 10px 0; z-index: 999;}
+    .nav-item { text-align: center; color: #6c757d; text-decoration: none; font-size: 12px; font-weight: bold; width: 25%;}
+    .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+    .nav-item.active { color: var(--identity-green); }
+
+    /* Canvas TTD */
+    #signature-pad { border: 2px dashed #ccc; border-radius: 12px; cursor: crosshair; background-color: #fafafa; width: 100%; }
   </style>
 </head>
 <body>
 
-<div class="container my-4" style="max-width: 650px;">
-
   <!-- ========================================== -->
-  <!-- SCREEN 1: DASHBOARD AREA                   -->
+  <!-- SCREEN 1: DASHBOARD UTAMA                  -->
   <!-- ========================================== -->
   <div id="dashboardScreen">
-    <!-- Header Greeting -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <p class="mb-0 text-muted" id="teksSapaanWaktu">Selamat pagi,</p>
-        <h4 class="fw-bold text-green mb-0" id="teksNamaPengguna">Petugas Lapangan</h4>
-        <span class="badge bg-warning text-dark mt-1" id="teksBidang">Akses Bebas</span>
-      </div>
-    </div>
-
-    <!-- Mading Digital -->
-    <div class="mading-box mb-4 shadow-sm">
-      <div class="fw-bold text-green mb-1" style="font-size: 13px;">📢 Papan Informasi Digital</div>
-      <marquee direction="left" scrollamount="5" class="text-secondary small fw-semibold" id="teksMading">
-        Selamat bekerja! Sistem beroperasi dalam Mode Bebas tanpa login.
-      </marquee>
-    </div>
-
-    <!-- Statistik Cards -->
-    <h6 class="fw-bold text-secondary mb-3">Statistik Laporan Anda</h6>
-    <div class="row g-3 mb-4">
-      <div class="col-6">
-        <div class="stat-card stat-server">
-          <h3 class="fw-bold mb-0">12</h3>
-          <span class="small opacity-75">Terkirim ke Server</span>
-        </div>
-      </div>
-      <div class="col-6">
-        <div class="stat-card stat-draft">
-          <h3 class="fw-bold mb-0">0</h3>
-          <span class="small opacity-75">Draft Tertunda</span>
+    <div class="header-app mb-2">
+      <div class="container" style="max-width: 650px;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="mb-0 opacity-75 small" id="tvSapaan">Selamat datang,</p>
+            <h4 class="fw-bold mb-0">Petugas Lapangan</h4>
+            <span class="badge bg-warning text-dark mt-1">Akses Bebas (Tanpa Login)</span>
+          </div>
+          <img src="https://ui-avatars.com/api/?name=Petugas&background=F57F17&color=fff&rounded=true" alt="Profile" width="50" class="rounded-circle shadow-sm">
         </div>
       </div>
     </div>
 
-    <!-- Informasi Bantuan -->
-    <div class="card border-0 rounded-4 shadow-sm p-4 bg-white text-center mt-5">
-      <h5 class="text-muted fw-bold">Siap Mendata?</h5>
-      <p class="small text-secondary mb-0">Ketuk tombol mengambang di pojok kanan bawah untuk memulai pelaporan formulir baru.</p>
-    </div>
-
-    <!-- FAB Tambah Data -->
-    <div class="fab-container">
-      <button class="fab-btn" onclick="tampilkanPilihModul()">
-        <span>➕</span> Tambah Laporan
-      </button>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- SCREEN 2: PILIH MODUL AREA                 -->
-  <!-- ========================================== -->
-  <div id="moduleScreen" class="card shadow border-0 rounded-4 d-none">
-    <div class="card-body p-4 p-md-5 text-center">
-      <h5 class="fw-bold text-success mb-2">Pilih Program Kegiatan</h5>
-      <p class="text-muted small mb-4">Pilih formulir sesuai dengan bidang tugas Anda.</p>
-
-      <select id="moduleSelector" class="form-select modern-input mb-4 text-center fw-bold">
-        <option value="">-- Sentuh untuk memilih --</option>
-        <option value="Pendataan Usaha Perdagangan">Pendataan Usaha Perdagangan</option>
-        <option value="Pendataan Pedagang Pasar">Pendataan Pedagang Pasar</option>
-        <option value="Pendataan IKM">Pendataan IKM</option>
-        <option value="Pendataan Pasar Swalayan">Pendataan Pasar Swalayan</option>
-      </select>
-
-      <div class="d-grid gap-2">
-        <button type="button" class="btn btn-green p-3 fw-bold" onclick="verifikasiModulDanMuat()">Siapkan Formulir 📝</button>
-        <button type="button" class="btn btn-light text-secondary fw-bold p-2 mt-2 rounded-pill" onclick="kembaliKeDashboard()">Batal</button>
+    <div class="container" style="max-width: 650px;">
+      <!-- Mading Digital -->
+      <div class="mading-box mb-4 shadow-sm" onclick="lihatMadingLengkap()">
+        <div class="fw-bold text-green mb-1" style="font-size: 13px;"><i class="fas fa-bullhorn"></i> Papan Informasi Digital</div>
+        <marquee direction="left" scrollamount="5" class="text-secondary small fw-semibold" id="tvMading">
+          Sistem beroperasi dalam Mode Bebas. Siap menerima input data lapangan.
+        </marquee>
       </div>
-    </div>
+
+      <!-- Statistik Laporan -->
+      <h6 class="fw-bold text-secondary mb-3">Ringkasan Laporan Server</h6>
+      <div class="row g-2 mb-4">
+        <div class="col-6">
+          <div class="stat-card stat-total text-center">
+            <h3 class="fw-bold mb-0" id="tvStat1">0</h3>
+            <span style="font-size: 12px; opacity: 0.9;">Total Dokumen</span>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="stat-card stat-server text-center">
+            <h3 class="fw-bold mb-0" id="tvStat2">0</h3>
+            <span style="font-size: 12px; opacity: 0.9;">Terkirim ke Database</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grafik Kinerja -->
+      <h6 class="fw-bold text-secondary mb-3 mt-4">Statistik Performa</h6>
+      <div class="bg-white rounded-4 p-3 shadow-sm mb-4">
+        <canvas id="chartCanvas" width="400" height="220"></canvas>
+      </div>
+
+      <!-- IG Feed Horizontal Scroll -->
+      <h6 class="fw-bold text-green mb-3 mt-4"><i class="fab fa-instagram"></i> Publikasi Lapangan</h6>
+      <div class="horizontal-scroll" id="rvAktivitas">
+          <div class="text-muted small">Memuat media...</div>
+      </div>
+    </div> <!-- End Container Dashboard -->
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 3: FORMULIR DINAMIS                 -->
+  <!-- SCREEN 2: FORMULIR INPUT DATA              -->
   <!-- ========================================== -->
   <div id="loadingFormArea" class="my-5 text-center d-none">
     <div class="spinner-border text-success" role="status"></div>
-    <p class="mt-2 text-muted small" id="loadingText">Mengunduh struktur formulir...</p>
+    <p class="mt-2 text-muted small">Membangun struktur formulir dari server...</p>
   </div>
 
-  <div id="formScreen" class="card shadow border-0 rounded-4 d-none">
-    <div class="card-header bg-green text-left py-3 rounded-top-4">
-      <h5 class="mb-1 fw-bold text-white">Input Data Lapangan</h5>
-      <p class="mb-0 small" style="color: #A5D6A7;" id="formSubtitleLabel">Modul: Memuat...</p>
+  <div id="formScreen" class="d-none" style="padding-bottom: 30px;">
+    <div class="header-app mb-4" style="border-radius: 0 0 20px 20px; padding-bottom: 20px;">
+      <div class="container" style="max-width: 650px;">
+        <h4 class="fw-bold mb-1">Formulir Pelaporan</h4>
+        <p class="mb-0 small opacity-75" id="formSubtitleLabel">Modul: ...</p>
+      </div>
     </div>
-
-    <div class="card-body p-4 p-md-5">
-      <button class="btn btn-outline-danger btn-sm mb-4 fw-bold rounded-pill" type="button" onclick="kembaliKeDashboard()">🔙 Batal & Kunci Form</button>
-
-      <form id="dynamicForm" onsubmit="submitFormData(this); return false;">
-        <div id="fieldsContainer"></div>
-        <div class="d-grid gap-2 mt-5">
-          <button type="submit" class="btn btn-yellow p-3 fw-bold text-uppercase" id="submitBtn">Kirim Laporan</button>
+    
+    <div class="container" style="max-width: 650px;">
+      <button class="btn btn-outline-danger btn-sm mb-4 fw-bold rounded-pill shadow-sm" type="button" onclick="kembaliKeDashboard()">
+        <i class="fas fa-arrow-left"></i> Batal & Kembali ke Dashboard
+      </button>
+      
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+          <form id="dynamicForm" onsubmit="submitFormData(this); return false;">
+            <div id="fieldsContainer"></div>
+            <div class="d-grid gap-2 mt-5">
+              <button type="submit" class="btn btn-warning p-3 fw-bold text-dark rounded-pill shadow-sm" id="submitBtn">Kirim Laporan Lapangan <i class="fas fa-paper-plane"></i></button>
+            </div>
+          </form>
+          <div id="formAlertBox" class="alert mt-4 d-none" role="alert"></div>
         </div>
-      </form>
-      <div id="formAlertBox" class="alert mt-4 d-none" role="alert"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Modal Preview Berita Acara -->
-<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content border-0 rounded-4">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title fw-bold text-success">Pratinjau Dokumen</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <pre id="previewContent" style="white-space: pre-wrap; font-family: monospace; font-size: 13px;"></pre>
-      </div>
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-primary rounded-pill fw-bold" data-bs-dismiss="modal">Tutup & Lanjut TTD</button>
       </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  // ==========================================
-  // KONFIGURASI SISTEM
-  // ==========================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbxoabOhILmnKHBElWFFGr3qIjmpRWVouvdGOW5YGEXke6Fnr0udZ5FCBVg4K0YhhGMZ/exec";
+  <!-- ========================================== -->
+  <!-- KOMPONEN TETAP (FAB, NAV, MODAL)           -->
+  <!-- ========================================== -->
 
-  // Konfigurasi Akun Bebas
-  let USER_AKTIF = "Petugas Lapangan";
-  let NAMA_MODUL_AKTIF = "";
+  <!-- FAB Tambah Data -->
+  <div class="fab-container" id="fabContainer">
+    <button class="fab-btn" data-bs-toggle="offcanvas" data-bs-target="#bottomSheetModul">
+      <i class="fas fa-plus"></i> Buat Laporan
+    </button>
+  </div>
 
-  // Data Referensi Wilayah
-  const dataWilayah = {
-    "Betoambari": ["Katobengke", "Labalawa", "Lipu", "Sulaa", "Waborobo"],
-    "Murhum": ["Baadia", "Melai", "Wajo", "Lamangga", "Tanganapada"],
-    "Batupoaro": ["Bone-Bone", "Kaobula", "Lanto", "Nganganaumala", "Tarafu", "Wameo"],
-    "Kokalukuna": ["Kadolo", "Kadolomoko", "Lakologou", "Liwuto", "Sukanaeyo", "Waruruma"],
-    "Sorawolio": ["Bugigi", "Gonda Baru", "Kaisabu Baru", "Karya Baru"],
-    "Bungi": ["Kampeonaho", "Liabuku", "Ngkaring Karing", "Tampuna", "Waliabuku"],
-    "Lea-Lea": ["Kalia-Kalia", "Kantingola", "Kolese", "Lowu-Lowu", "Palabusa"]
-  };
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav" id="bottomNav">
+    <a href="index.html" class="nav-item active"><i class="fas fa-home"></i>Beranda</a>
+    <a href="peta.html" class="nav-item"><i class="fas fa-map-marked-alt"></i>Peta</a>
+    <a href="#" class="nav-item"><i class="fas fa-file-alt"></i>Laporan</a>
+    <a href="#" class="nav-item"><i class="fas fa-user"></i>Profil</a>
+  </div>
 
-  let fieldsData = [];
-  let isCanvasActive = false;
-  let canvas, ctx, drawing = false;
-  let lokasiSaatIni = "Mencari sinyal GPS...";
+  <!-- Bottom Sheet: Pilihan Modul -->
+  <div class="offcanvas offcanvas-bottom" tabindex="-1" id="bottomSheetModul" style="height: 65vh; border-radius: 20px 20px 0 0;">
+    <div class="offcanvas-header bg-light">
+      <h5 class="offcanvas-title fw-bold text-dark">Pilih Formulir Kerja</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body bg-light pt-2">
+      <div id="gridBidangContainer" class="row g-2">
+        <div class="text-center w-100 mt-4"><div class="spinner-border text-success"></div><p class="small text-muted mt-2">Memuat daftar modul...</p></div>
+      </div>
+    </div>
+  </div>
 
-  document.addEventListener("DOMContentLoaded", function() {
-    initGPS();
-    aturSapaanWaktu();
-  });
+  <!-- Modal Preview Berita Acara -->
+  <div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content border-0 rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-success">Pratinjau Dokumen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <pre id="previewContent" style="white-space: pre-wrap; font-family: monospace; font-size: 13px;"></pre>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-primary rounded-pill fw-bold" data-bs-dismiss="modal">Tutup & Lanjut TTD</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  // ==========================================
-  // LOGIKA DASHBOARD & NAVIGASI
-  // ==========================================
-  function aturSapaanWaktu() {
-    const jam = new Date().getHours();
-    let sapaan = "Selamat malam,";
-    if (jam >= 4 && jam < 11) sapaan = "Selamat pagi,";
-    else if (jam >= 11 && jam < 15) sapaan = "Selamat siang,";
-    else if (jam >= 15 && jam < 18) sapaan = "Selamat sore,";
-    document.getElementById('teksSapaanWaktu').innerText = sapaan;
-  }
+  <!-- Script Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxoabOhILmnKHBElWFFGr3qIjmpRWVouvdGOW5YGEXke6Fnr0udZ5FCBVg4K0YhhGMZ/exec";
+    
+    // Konfigurasi Bebas Login
+    const USER_AKTIF = "Petugas Lapangan"; 
+    let NAMA_MODUL_AKTIF = "";
+    
+    // Variabel Form
+    const dataWilayah = {
+        "Betoambari": ["Katobengke", "Labalawa", "Lipu", "Sulaa", "Waborobo"],
+        "Murhum": ["Baadia", "Melai", "Wajo", "Lamangga", "Tanganapada"],
+        "Batupoaro": ["Bone-Bone", "Kaobula", "Lanto", "Nganganaumala", "Tarafu", "Wameo"],
+        "Kokalukuna": ["Kadolo", "Kadolomoko", "Lakologou", "Liwuto", "Sukanaeyo", "Waruruma"],
+        "Sorawolio": ["Bugigi", "Gonda Baru", "Kaisabu Baru", "Karya Baru"],
+        "Bungi": ["Kampeonaho", "Liabuku", "Ngkaring Karing", "Tampuna", "Waliabuku"],
+        "Lea-Lea": ["Kalia-Kalia", "Kantingola", "Kolese", "Lowu-Lowu", "Palabusa"]
+    };
+    let lokasiSaatIni = "Mencari sinyal GPS...";
+    let isCanvasActive = false;
+    let canvas, ctx, drawing = false;
 
-  function tampilkanPilihModul() {
-    document.getElementById('dashboardScreen').classList.add('d-none');
-    document.getElementById('moduleSelector').value = "";
-    document.getElementById('moduleScreen').classList.remove('d-none');
-  }
+    // ==========================================
+    // INITIALIZATION & DASHBOARD
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", function() {
+      initApp();
+      initGPS();
+    });
 
-  function kembaliKeDashboard() {
-    document.getElementById('moduleScreen').classList.add('d-none');
-    document.getElementById('formScreen').classList.add('d-none');
-    document.getElementById('loadingFormArea').classList.add('d-none');
-    document.getElementById('dashboardScreen').classList.remove('d-none');
-    window.scrollTo(0,0);
-  }
+    function initApp() {
+      const jam = new Date().getHours();
+      let sapaan = (jam >= 4 && jam < 11) ? "Selamat pagi," : (jam >= 11 && jam < 15) ? "Selamat siang," : (jam >= 15 && jam < 18) ? "Selamat sore," : "Selamat malam,";
+      document.getElementById('tvSapaan').innerText = sapaan;
 
-  // ==========================================
-  // LOGIKA PILIH MODUL & MUAT FORM
-  // ==========================================
-  function verifikasiModulDanMuat() {
-    const modul = document.getElementById('moduleSelector').value;
-    if (!modul) { alert("Pilih modul pendataan terlebih dahulu!"); return; }
+      // Tarik API Dasar
+      fetchDataAPI("getMading", (data) => { if(data.mading) document.getElementById('tvMading').innerText = data.mading; });
+      fetchDataAPI("getModul", renderDaftarModul);
+      fetchDataAPI("getFeedIG", renderIGFeed);
+      fetchDataAPI("getLaporanTim", renderStatsAndChart);
+    }
 
-    NAMA_MODUL_AKTIF = modul;
+    async function fetchDataAPI(action, callback) {
+        try {
+            const res = await fetch(`${API_URL}?action=${action}`);
+            const data = await res.json();
+            if(data) callback(data);
+        } catch (err) { console.error("Gagal load API:", action); }
+    }
 
-    // Pindah Layar
-    document.getElementById('moduleScreen').classList.add('d-none');
-    document.getElementById('loadingFormArea').classList.remove('d-none');
-    document.getElementById('formAlertBox').classList.add('d-none');
-    document.getElementById('fieldsContainer').innerHTML = "";
-    document.getElementById('formSubtitleLabel').innerText = `Modul: ${NAMA_MODUL_AKTIF}`;
+    function renderStatsAndChart(dataServer) {
+        const total = dataServer.length || 0;
+        document.getElementById('tvStat1').innerText = total;
+        document.getElementById('tvStat2').innerText = total;
 
-    const fetchUrl = `${API_URL}?action=getFields&nama_modul=${encodeURIComponent(NAMA_MODUL_AKTIF)}`;
+        // Buat Grafik Sederhana dari Data Laporan
+        const mapBidang = {};
+        dataServer.forEach(d => {
+            const b = d.bidang || "Lainnya";
+            mapBidang[b] = (mapBidang[b] || 0) + 1;
+        });
 
-    fetch(fetchUrl)
-            .then(response => response.json())
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(mapBidang).length > 0 ? Object.keys(mapBidang) : ['Belum ada data'],
+                datasets: [{
+                    label: 'Jumlah Laporan',
+                    data: Object.keys(mapBidang).length > 0 ? Object.values(mapBidang) : [0],
+                    backgroundColor: ['#1B5E20', '#F57F17', '#1976D2', '#8E24AA'],
+                    borderRadius: 6
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    function renderIGFeed(dataList) {
+        const container = document.getElementById('rvAktivitas');
+        container.innerHTML = "";
+        if(!dataList || dataList.length === 0) {
+            dataList = [ {gambar: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500", caption: "Giat Pasar Murah Kota Baubau"}, {gambar: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?w=500", caption: "Sidak Distributor Minyak Goreng"} ];
+        }
+        dataList.forEach(item => {
+            container.innerHTML += `
+                <div class="ig-card">
+                    <img src="${item.gambar || item.Gambar || ''}" alt="Info">
+                    <div class="ig-overlay"><div class="ig-caption">${item.caption || item.Caption || 'Info'}</div></div>
+                </div>
+            `;
+        });
+    }
+
+    function renderDaftarModul(data) {
+        const container = document.getElementById('gridBidangContainer');
+        container.innerHTML = "";
+        data.forEach(m => {
+            const namaModul = m.nama_modul || m.namamodul;
+            const bidang = m.bidang || "Umum";
+            container.innerHTML += `
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 12px; cursor: pointer;" onclick="bukaFormulir('${namaModul}')">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <i class="fas fa-file-signature text-success me-3" style="font-size: 24px;"></i>
+                            <div>
+                                <div class="fw-bold text-dark" style="font-size: 14px;">${namaModul}</div>
+                                <div class="text-muted" style="font-size: 11px;">${bidang}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // ==========================================
+    // ALUR FORMULIR
+    // ==========================================
+    function bukaFormulir(modul) {
+        // 1. Tutup Menu Bawah (Offcanvas)
+        const offcanvasEl = document.getElementById('bottomSheetModul');
+        const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if(offcanvas) offcanvas.hide();
+
+        NAMA_MODUL_AKTIF = modul;
+        
+        // 2. Sembunyikan Dashboard, Tampilkan Area Form
+        document.getElementById('dashboardScreen').classList.add('d-none');
+        document.getElementById('bottomNav').classList.add('d-none');
+        document.getElementById('fabContainer').classList.add('d-none');
+        
+        document.getElementById('loadingFormArea').classList.remove('d-none');
+        document.getElementById('fieldsContainer').innerHTML = "";
+        document.getElementById('formSubtitleLabel').innerText = `Modul: ${NAMA_MODUL_AKTIF}`;
+
+        // 3. Tarik Field dari Server
+        fetch(`${API_URL}?action=getFields&nama_modul=${encodeURIComponent(NAMA_MODUL_AKTIF)}`)
+            .then(res => res.json())
             .then(data => {
-              document.getElementById('loadingFormArea').classList.add('d-none');
-              if (data.length === 0) {
-                alert(`Formulir "${NAMA_MODUL_AKTIF}" kosong di server.`);
-                kembaliKeDashboard();
-                return;
-              }
-              fieldsData = data;
-              renderFormFields(data);
+                document.getElementById('loadingFormArea').classList.add('d-none');
+                if (data.length === 0) {
+                    alert("Gagal: Formulir belum disiapkan di server.");
+                    kembaliKeDashboard();
+                    return;
+                }
+                renderFormFields(data);
             })
             .catch(err => {
-              document.getElementById('loadingFormArea').classList.add('d-none');
-              alert('Gagal mengunduh formulir: ' + err.message);
-              kembaliKeDashboard();
+                alert("Koneksi gagal saat mengunduh form.");
+                kembaliKeDashboard();
             });
-  }
+    }
 
-  // ==========================================
-  // RENDERING FORM
-  // ==========================================
-  function renderFormFields(fields) {
-    const container = document.getElementById('fieldsContainer');
-    isCanvasActive = false;
+    function kembaliKeDashboard() {
+        document.getElementById('formScreen').classList.add('d-none');
+        document.getElementById('loadingFormArea').classList.add('d-none');
+        document.getElementById('dashboardScreen').classList.remove('d-none');
+        document.getElementById('bottomNav').classList.remove('d-none');
+        document.getElementById('fabContainer').classList.remove('d-none');
+        window.scrollTo(0,0);
+    }
 
-    fields.forEach((fieldRow) => {
-      let label = "", jenis = "text", opsi = "";
-      for(let key in fieldRow) {
-        const k = key.toLowerCase().trim();
-        if(k.includes("label") || k.includes("pertanyaan")) label = fieldRow[key];
-        if(k.includes("jenis")) jenis = fieldRow[key];
-        if(k.includes("opsi") || k.includes("pilihan")) opsi = fieldRow[key];
+    function initGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => { lokasiSaatIni = `${pos.coords.latitude}, ${pos.coords.longitude}`; document.querySelectorAll('.input-lokasi').forEach(el => el.value = lokasiSaatIni); },
+          err => { lokasiSaatIni = "Izin lokasi ditolak"; }
+        );
       }
+    }
 
-      if(!label) return;
-      const labelClean = label.toLowerCase();
-      if(labelClean.includes("petugas") || labelClean.includes("surveyor")) return;
-      const jenisClean = jenis.toLowerCase().trim();
-      const fieldWrapper = document.createElement('div');
-      fieldWrapper.className = 'mb-4';
-
-      const labelEl = document.createElement('label');
-      labelEl.className = 'form-label fw-bold small text-secondary mb-2';
-      labelEl.innerHTML = label;
-      fieldWrapper.appendChild(labelEl);
-
-      if (jenisClean === 'date_auto' || jenisClean === 'tanggal_auto') {
-        const input = document.createElement('input');
-        input.className = 'form-control modern-input fw-bold text-success';
-        input.type = 'text'; input.name = label; input.readOnly = true;
-        const today = new Date();
-        input.value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-        fieldWrapper.appendChild(input);
-
-      } else if (jenisClean === 'lokasi' || jenisClean === 'koordinat' || jenisClean === 'lokasi_auto') {
-        const input = document.createElement('input');
-        input.className = 'form-control modern-input fw-bold text-success input-lokasi';
-        input.type = 'text'; input.name = label; input.value = lokasiSaatIni; input.readOnly = true;
-        fieldWrapper.appendChild(input);
-
-      } else if (jenisClean === 'kondisional' || jenisClean === 'bercabang' || jenisClean === 'ya_tidak') {
-        const select = document.createElement('select');
-        select.className = 'form-select modern-input field-input'; select.name = label;
-        select.innerHTML = `<option value="">Pilih...</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>`;
-        const inputSub = document.createElement('input');
-        inputSub.type = 'text'; inputSub.className = 'form-control modern-input mt-2 d-none field-input';
-        inputSub.name = `${label}_keterangan`; inputSub.placeholder = "Tulis keterangan...";
-        select.addEventListener('change', function() {
-          if(this.value === 'Ya') { inputSub.classList.remove('d-none'); inputSub.required = true; }
-          else { inputSub.classList.add('d-none'); inputSub.required = false; inputSub.value = ''; }
-        });
-        fieldWrapper.appendChild(select); fieldWrapper.appendChild(inputSub);
-
-      } else if (jenisClean === 'dropdown' || jenisClean === 'pilihan' || jenisClean === 'select') {
-        const select = document.createElement('select');
-        select.className = 'form-select modern-input field-input'; select.name = label; select.required = true;
-        select.innerHTML = `<option value="">-- Pilih --</option>`;
-        if (opsi) { opsi.split(',').forEach(opt => { select.innerHTML += `<option value="${opt.trim()}">${opt.trim()}</option>`; }); }
-        const inputLainnya = document.createElement('input');
-        inputLainnya.type = 'text'; inputLainnya.className = 'form-control modern-input mt-2 d-none field-input';
-        inputLainnya.name = `${label}_lainnya`; inputLainnya.placeholder = "Tuliskan lainnya...";
-        select.addEventListener('change', function() {
-          if(this.value.toLowerCase() === 'lainnya' || this.value.toLowerCase() === 'lain-lain') { inputLainnya.classList.remove('d-none'); inputLainnya.required = true; }
-          else { inputLainnya.classList.add('d-none'); inputLainnya.required = false; inputLainnya.value = ''; }
-        });
-        fieldWrapper.appendChild(select); fieldWrapper.appendChild(inputLainnya);
-
-      } else if (jenisClean === 'kecamatan') {
-        const selKec = document.createElement('select');
-        selKec.className = 'form-select modern-input mb-2 field-input'; selKec.name = 'kecamatan'; selKec.required = true;
-        selKec.innerHTML = `<option value="">Pilih Kecamatan</option>`;
-        Object.keys(dataWilayah).forEach(kec => { selKec.innerHTML += `<option value="${kec}">${kec}</option>`; });
-        const selKel = document.createElement('select');
-        selKel.className = 'form-select modern-input mb-2 d-none field-input'; selKel.name = 'kelurahan';
-        const inpRt = document.createElement('input');
-        inpRt.type = 'text'; inpRt.className = 'form-control modern-input d-none field-input'; inpRt.name = 'rt_rw'; inpRt.placeholder = "RT/RW";
-        selKec.addEventListener('change', function() {
-          selKel.innerHTML = `<option value="">Pilih Kelurahan</option>`;
-          if(this.value && dataWilayah[this.value]) {
-            dataWilayah[this.value].forEach(kel => { selKel.innerHTML += `<option value="${kel}">${kel}</option>`; });
-            selKel.classList.remove('d-none'); selKel.required = true;
-          } else { selKel.classList.add('d-none'); selKel.required = false; inpRt.classList.add('d-none'); }
-        });
-        selKel.addEventListener('change', function() {
-          if(this.value) { inpRt.classList.remove('d-none'); } else { inpRt.classList.add('d-none'); }
-        });
-        fieldWrapper.appendChild(selKec); fieldWrapper.appendChild(selKel); fieldWrapper.appendChild(inpRt);
-
-      } else if (jenisClean === 'number' || jenisClean === 'angka' || jenisClean === 'hp' || jenisClean === 'nib') {
-        const isTahunAtauHp = labelClean.includes("tahun") || labelClean.includes("nomor") || labelClean.includes("hp") || labelClean.includes("nik") || jenisClean.includes("hp");
-        const input = document.createElement('input');
-        input.className = 'form-control modern-input field-input';
-        input.type = isTahunAtauHp ? 'tel' : 'text'; input.name = label; input.required = true;
-        input.placeholder = isTahunAtauHp ? `Masukkan ${label}...` : `Masukkan nominal...`;
-        if(!isTahunAtauHp) {
-          input.addEventListener('input', function(e) {
-            let val = this.value.replace(/\./g, '');
-            if(!isNaN(val) && val.length > 0) this.value = parseInt(val, 10).toLocaleString('id-ID');
-            else this.value = val.replace(/[^\d]/g, '');
-          });
+    function renderFormFields(fields) {
+      const container = document.getElementById('fieldsContainer');
+      isCanvasActive = false; 
+      
+      fields.forEach((fieldRow) => {
+        let label = "", jenis = "text", opsi = "";
+        for(let key in fieldRow) {
+            const k = key.toLowerCase().trim();
+            if(k.includes("label") || k.includes("pertanyaan")) label = fieldRow[key];
+            if(k.includes("jenis")) jenis = fieldRow[key];
+            if(k.includes("opsi") || k.includes("pilihan")) opsi = fieldRow[key];
         }
-        fieldWrapper.appendChild(input);
 
-      } else if (jenisClean === 'foto' || jenisClean === 'gambar' || jenisClean === 'file') {
-        const input = document.createElement('input');
-        input.className = 'form-control modern-input';
-        input.type = 'file'; input.name = label; input.accept = 'image/*'; input.required = true;
-        fieldWrapper.appendChild(input);
+        if(!label) return;
+        const labelClean = label.toLowerCase();
+        if(labelClean.includes("petugas") || labelClean.includes("surveyor")) return;
+        
+        const jenisClean = jenis.toLowerCase().trim();
+        const fieldWrapper = document.createElement('div');
+        fieldWrapper.className = 'mb-4';
+        
+        const labelEl = document.createElement('label');
+        labelEl.className = 'form-label fw-bold small text-secondary mb-2';
+        labelEl.innerHTML = label;
+        fieldWrapper.appendChild(labelEl);
 
-      } else if (jenisClean === 'ttd' || jenisClean === 'signature' || jenisClean === 'tandatangan') {
-        isCanvasActive = true;
-        fieldWrapper.innerHTML += `
-            <div class="p-2 border rounded-4 bg-white shadow-sm">
-              <button type="button" class="btn btn-preview w-100 mb-3 py-2 fw-bold" onclick="showBeritaAcara()">📄 Lihat Preview Berita Acara</button>
-              <div class="position-relative">
-                <canvas id="signature-pad" width="550" height="200" class="w-100"></canvas>
-              </div>
-              <div class="text-end mt-2">
-                <span class="text-danger small fw-bold" style="cursor:pointer;" onclick="clearCanvas()">🗑️ Bersihkan Tanda Tangan</span>
-              </div>
+        if (jenisClean === 'date_auto' || jenisClean === 'tanggal_auto') {
+          const input = document.createElement('input');
+          input.className = 'form-control modern-input fw-bold text-success';
+          input.type = 'text'; input.name = label; input.readOnly = true;
+          const today = new Date(); input.value = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+          fieldWrapper.appendChild(input);
+
+        } else if (jenisClean === 'lokasi' || jenisClean === 'koordinat' || jenisClean === 'lokasi_auto') {
+          const input = document.createElement('input');
+          input.className = 'form-control modern-input fw-bold text-success input-lokasi';
+          input.type = 'text'; input.name = label; input.value = lokasiSaatIni; input.readOnly = true;
+          fieldWrapper.appendChild(input);
+
+        } else if (jenisClean === 'kondisional' || jenisClean === 'bercabang' || jenisClean === 'ya_tidak') {
+          const select = document.createElement('select');
+          select.className = 'form-select modern-input field-input'; select.name = label; 
+          select.innerHTML = `<option value="">Pilih...</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>`;
+          const inputSub = document.createElement('input'); inputSub.type = 'text'; inputSub.className = 'form-control modern-input mt-2 d-none field-input';
+          inputSub.name = `${label}_keterangan`; inputSub.placeholder = "Tulis keterangan...";
+          select.addEventListener('change', function() {
+            if(this.value === 'Ya') { inputSub.classList.remove('d-none'); inputSub.required = true; } else { inputSub.classList.add('d-none'); inputSub.required = false; inputSub.value = ''; }
+          });
+          fieldWrapper.appendChild(select); fieldWrapper.appendChild(inputSub);
+
+        } else if (jenisClean === 'dropdown' || jenisClean === 'pilihan' || jenisClean === 'select') {
+          const select = document.createElement('select');
+          select.className = 'form-select modern-input field-input'; select.name = label; select.required = true;
+          select.innerHTML = `<option value="">-- Pilih --</option>`;
+          if (opsi) { opsi.split(',').forEach(opt => { select.innerHTML += `<option value="${opt.trim()}">${opt.trim()}</option>`; }); }
+          const inputLainnya = document.createElement('input'); inputLainnya.type = 'text'; inputLainnya.className = 'form-control modern-input mt-2 d-none field-input';
+          inputLainnya.name = `${label}_lainnya`; inputLainnya.placeholder = "Tuliskan lainnya...";
+          select.addEventListener('change', function() {
+            if(this.value.toLowerCase() === 'lainnya' || this.value.toLowerCase() === 'lain-lain') { inputLainnya.classList.remove('d-none'); inputLainnya.required = true; } else { inputLainnya.classList.add('d-none'); inputLainnya.required = false; inputLainnya.value = ''; }
+          });
+          fieldWrapper.appendChild(select); fieldWrapper.appendChild(inputLainnya);
+
+        } else if (jenisClean === 'kecamatan') {
+          const selKec = document.createElement('select'); selKec.className = 'form-select modern-input mb-2 field-input'; selKec.name = 'kecamatan'; selKec.required = true;
+          selKec.innerHTML = `<option value="">Pilih Kecamatan</option>`;
+          Object.keys(dataWilayah).forEach(kec => { selKec.innerHTML += `<option value="${kec}">${kec}</option>`; });
+          const selKel = document.createElement('select'); selKel.className = 'form-select modern-input mb-2 d-none field-input'; selKel.name = 'kelurahan';
+          const inpRt = document.createElement('input'); inpRt.type = 'text'; inpRt.className = 'form-control modern-input d-none field-input'; inpRt.name = 'rt_rw'; inpRt.placeholder = "RT/RW";
+          selKec.addEventListener('change', function() {
+            selKel.innerHTML = `<option value="">Pilih Kelurahan</option>`;
+            if(this.value && dataWilayah[this.value]) { dataWilayah[this.value].forEach(kel => { selKel.innerHTML += `<option value="${kel}">${kel}</option>`; }); selKel.classList.remove('d-none'); selKel.required = true; } else { selKel.classList.add('d-none'); selKel.required = false; inpRt.classList.add('d-none'); }
+          });
+          selKel.addEventListener('change', function() { if(this.value) inpRt.classList.remove('d-none'); else inpRt.classList.add('d-none'); });
+          fieldWrapper.appendChild(selKec); fieldWrapper.appendChild(selKel); fieldWrapper.appendChild(inpRt);
+
+        } else if (jenisClean === 'number' || jenisClean === 'angka' || jenisClean === 'hp' || jenisClean === 'nib') {
+          const isTahunAtauHp = labelClean.includes("tahun") || labelClean.includes("nomor") || labelClean.includes("hp") || labelClean.includes("nik") || jenisClean.includes("hp");
+          const input = document.createElement('input'); input.className = 'form-control modern-input field-input'; input.type = isTahunAtauHp ? 'tel' : 'text'; input.name = label; input.required = true;
+          input.placeholder = isTahunAtauHp ? `Masukkan ${label}...` : `Masukkan nominal...`;
+          if(!isTahunAtauHp) {
+            input.addEventListener('input', function(e) {
+              let val = this.value.replace(/\./g, '');
+              if(!isNaN(val) && val.length > 0) this.value = parseInt(val, 10).toLocaleString('id-ID'); else this.value = val.replace(/[^\d]/g, '');
+            });
+          }
+          fieldWrapper.appendChild(input);
+
+        } else if (jenisClean === 'foto' || jenisClean === 'gambar' || jenisClean === 'file') {
+          const input = document.createElement('input'); input.className = 'form-control modern-input'; input.type = 'file'; input.name = label; input.accept = 'image/*'; input.required = true;
+          fieldWrapper.appendChild(input);
+
+        } else if (jenisClean === 'ttd' || jenisClean === 'signature' || jenisClean === 'tandatangan') {
+          isCanvasActive = true;
+          fieldWrapper.innerHTML += `
+            <div class="p-3 border rounded-4 bg-white shadow-sm">
+              <button type="button" class="btn btn-primary w-100 mb-3 py-2 fw-bold rounded-pill" onclick="showBeritaAcara()">📄 Pratinjau Dokumen</button>
+              <canvas id="signature-pad" height="200"></canvas>
+              <div class="text-end mt-2"><span class="text-danger small fw-bold" style="cursor:pointer;" onclick="clearCanvas()"><i class="fas fa-trash"></i> Hapus TTD</span></div>
             </div>
             <input type="hidden" id="hidden_ttd" name="${label}" required>`;
-
-      } else {
-        const input = document.createElement('input');
-        input.className = 'form-control modern-input field-input';
-        input.type = (jenisClean === 'date' || jenisClean === 'tanggal') ? 'date' : 'text';
-        input.name = label; input.placeholder = "Ketik di sini..."; input.required = true;
-        fieldWrapper.appendChild(input);
-      }
-
-      container.appendChild(fieldWrapper);
-    });
-
-    document.getElementById('formScreen').classList.remove('d-none');
-    if (isCanvasActive) initSignaturePad();
-  }
-
-  // ==========================================
-  // SISTEM PENGIRIMAN DATA
-  // ==========================================
-  function getBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
-  }
-
-  async function submitFormData(formElement) {
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true; btn.innerText = 'MENGIRIM DATA...';
-    const formData = new FormData(formElement);
-    let payloadInside = {};
-
-    if (isCanvasActive) {
-      const hiddenTtd = document.getElementById('hidden_ttd');
-      if (isCanvasBlank()) { tampilkanPesanAlert(document.getElementById('formAlertBox'), 'Tanda tangan wajib diisi!', 'danger'); btn.disabled = false; btn.innerText = 'KIRIM LAPORAN'; return; }
-      hiddenTtd.value = canvas.toDataURL("image/png");
-    }
-
-    payloadInside["nama_petugas"] = USER_AKTIF;
-
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File && value.name) {
-        if(value.size > 0) payloadInside[key] = await getBase64(value); else payloadInside[key] = "";
-      } else {
-        let finalVal = value;
-        const inputEl = document.querySelector(`input[name="${key}"]`);
-        if(inputEl && !inputEl.readOnly && inputEl.type === 'text' && value.includes('.')) {
-          if(!isNaN(value.replace(/\./g, ''))) finalVal = value.replace(/\./g, '');
+            
+        } else {
+          const input = document.createElement('input'); input.className = 'form-control modern-input field-input'; input.type = (jenisClean === 'date' || jenisClean === 'tanggal') ? 'date' : 'text';
+          input.name = label; input.placeholder = "Ketik di sini..."; input.required = true;
+          fieldWrapper.appendChild(input);
         }
-        payloadInside[key] = finalVal;
-      }
+
+        container.appendChild(fieldWrapper);
+      });
+
+      document.getElementById('formScreen').classList.remove('d-none');
+      if (isCanvasActive) initSignaturePad();
     }
 
-    const finalPayloadToPost = {
-      "nama_modul": NAMA_MODUL_AKTIF,
-      "tanggal_input": new Date().toLocaleString('id-ID'),
-      "payload": payloadInside
-    };
-
-    fetch(API_URL, {
-      method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(finalPayloadToPost)
-    })
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === "Sukses") {
-                alert(data.pesan || 'Sukses! Laporan Tersimpan.');
-                formElement.reset();
-                kembaliKeDashboard();
-                if(isCanvasActive) clearCanvas();
-                window.scrollTo(0,0);
-              } else {
-                tampilkanPesanAlert(document.getElementById('formAlertBox'), 'Gagal: ' + (data.pesan || 'Kesalahan server'), 'danger');
-              }
-            })
-            .catch(err => { tampilkanPesanAlert(document.getElementById('formAlertBox'), 'Koneksi ke server terputus.', 'danger'); })
-            .finally(() => { btn.disabled = false; btn.innerText = 'KIRIM LAPORAN'; });
-  }
-
-  // ==========================================
-  // UTILITIES
-  // ==========================================
-  function tampilkanPesanAlert(boxEl, msg, type) {
-    boxEl.className = `alert mt-4 alert-${type}`;
-    boxEl.innerText = msg;
-    boxEl.classList.remove('d-none');
-  }
-
-  function initGPS() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-              pos => {
-                lokasiSaatIni = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                document.querySelectorAll('.input-lokasi').forEach(el => el.value = lokasiSaatIni);
-              },
-              err => { lokasiSaatIni = "Izin lokasi ditolak pengguna"; }
-      );
+    // ==========================================
+    // SUBMIT DATA & CANVAS
+    // ==========================================
+    function getBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader(); reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+      });
     }
-  }
 
-  function showBeritaAcara() {
-    let previewText = "BERITA ACARA\n========================\n\n";
-    previewText += `Modul Laporan : ${NAMA_MODUL_AKTIF}\n`;
-    previewText += `Nama Petugas  : ${USER_AKTIF}\n`;
-    const now = new Date();
-    const timeStr = `${now.getDate()} ${now.toLocaleString('id-ID', {month: 'long'})} ${now.getFullYear()}, ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-    previewText += `Waktu Data    : ${timeStr}\n`;
-    previewText += `Lokasi GPS    : ${lokasiSaatIni}\n\n`;
-    previewText += "RINCIAN DATA:\n------------------------\n";
-    const inputs = document.querySelectorAll('.field-input');
-    inputs.forEach(input => {
-      if (!input.classList.contains('d-none')) {
-        let val = input.value || "-";
-        let name = input.name || input.previousElementSibling?.innerText || "Data";
-        previewText += `• ${name}: ${val}\n`;
+    async function submitFormData(formElement) {
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> MENGIRIM DATA...';
+      const formData = new FormData(formElement);
+      let payloadInside = {};
+
+      if (isCanvasActive) {
+        const hiddenTtd = document.getElementById('hidden_ttd');
+        if (isCanvasBlank()) { alert('Tanda tangan wajib diisi!'); btn.disabled = false; btn.innerText = 'Kirim Laporan Lapangan'; return; }
+        hiddenTtd.value = canvas.toDataURL("image/png");
       }
-    });
-    previewText += "\n========================\n";
-    previewText += "Dengan ini menyatakan bahwa data yang diberikan telah sesuai dan benar.";
-    document.getElementById('previewContent').innerText = previewText;
-    new bootstrap.Modal(document.getElementById('previewModal')).show();
-  }
 
-  function initSignaturePad() {
-    canvas = document.getElementById('signature-pad');
-    if(!canvas) return;
-    ctx = canvas.getContext('2d'); ctx.lineWidth = 3; ctx.strokeStyle = "#000000"; ctx.lineJoin = "round";
-    canvas.addEventListener("mousedown", (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-    canvas.addEventListener("mousemove", (e) => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
-    canvas.addEventListener("mouseup", () => drawing = false);
-    canvas.addEventListener("touchstart", (e) => {
-      drawing = true; ctx.beginPath(); var touch = e.touches[0]; var rect = canvas.getBoundingClientRect();
-      ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top); e.preventDefault();
-    }, {passive: false});
-    canvas.addEventListener("touchmove", (e) => {
-      if (!drawing) return; var touch = e.touches[0]; var rect = canvas.getBoundingClientRect();
-      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); e.preventDefault();
-    }, {passive: false});
-    canvas.addEventListener("touchend", () => drawing = false);
-  }
-  function clearCanvas() { if(canvas) { ctx.clearRect(0, 0, canvas.width, canvas.height); document.getElementById('hidden_ttd').value = ""; } }
-  function isCanvasBlank() {
-    if(!canvas || !ctx) return false;
-    const buffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
-    return !buffer.some(color => color !== 0);
-  }
-</script>
+      payloadInside["nama_petugas"] = USER_AKTIF;
+
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File && value.name) {
+          if(value.size > 0) payloadInside[key] = await getBase64(value); else payloadInside[key] = "";
+        } else {
+          let finalVal = value;
+          const inputEl = document.querySelector(`input[name="${key}"]`);
+          if(inputEl && !inputEl.readOnly && inputEl.type === 'text' && value.includes('.')) {
+              if(!isNaN(value.replace(/\./g, ''))) finalVal = value.replace(/\./g, '');
+          }
+          payloadInside[key] = finalVal;
+        }
+      }
+
+      const finalPayloadToPost = {
+        "nama_modul": NAMA_MODUL_AKTIF,
+        "tanggal_input": new Date().toLocaleString('id-ID'),
+        "payload": payloadInside
+      };
+
+      fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(finalPayloadToPost) })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "Sukses") { alert(data.pesan || 'Sukses! Laporan Tersimpan.'); formElement.reset(); kembaliKeDashboard(); if(isCanvasActive) clearCanvas(); } 
+        else { alert('Gagal: ' + (data.pesan || 'Kesalahan server')); }
+      })
+      .catch(err => { alert('Koneksi ke server terputus. Pastikan internet stabil.'); })
+      .finally(() => { btn.disabled = false; btn.innerHTML = 'Kirim Laporan Lapangan <i class="fas fa-paper-plane"></i>'; });
+    }
+
+    function showBeritaAcara() {
+      let previewText = "BERITA ACARA\n========================\n\n";
+      previewText += `Modul Laporan : ${NAMA_MODUL_AKTIF}\nPetugas       : ${USER_AKTIF}\nWaktu Data    : ${new Date().toLocaleString('id-ID')}\nLokasi GPS    : ${lokasiSaatIni}\n\n`;
+      previewText += "RINCIAN DATA:\n------------------------\n";
+      document.querySelectorAll('.field-input').forEach(input => {
+        if (!input.classList.contains('d-none')) { previewText += `• ${input.name || 'Data'}: ${input.value || "-"}\n`; }
+      });
+      document.getElementById('previewContent').innerText = previewText;
+      new bootstrap.Modal(document.getElementById('previewModal')).show();
+    }
+
+    function initSignaturePad() {
+      canvas = document.getElementById('signature-pad'); if(!canvas) return;
+      ctx = canvas.getContext('2d'); ctx.lineWidth = 3; ctx.strokeStyle = "#000000"; ctx.lineJoin = "round";
+      const setPos = (e) => { const rect = canvas.getBoundingClientRect(); return { x: (e.clientX || e.touches[0].clientX) - rect.left, y: (e.clientY || e.touches[0].clientY) - rect.top }; };
+      canvas.addEventListener("mousedown", (e) => { drawing = true; ctx.beginPath(); const p = setPos(e); ctx.moveTo(p.x, p.y); });
+      canvas.addEventListener("mousemove", (e) => { if (drawing) { const p = setPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); } });
+      canvas.addEventListener("mouseup", () => drawing = false);
+      canvas.addEventListener("touchstart", (e) => { drawing = true; ctx.beginPath(); const p = setPos(e); ctx.moveTo(p.x, p.y); e.preventDefault(); }, {passive: false});
+      canvas.addEventListener("touchmove", (e) => { if (drawing) { const p = setPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); } }, {passive: false});
+      canvas.addEventListener("touchend", () => drawing = false);
+      
+      // Fix resolusi canvas agar tidak pecah / meleset saat digambar
+      canvas.width = canvas.offsetWidth;
+    }
+    function clearCanvas() { if(canvas) { ctx.clearRect(0, 0, canvas.width, canvas.height); document.getElementById('hidden_ttd').value = ""; } }
+    function isCanvasBlank() { return !canvas || !ctx || !new Uint32Array(ctx.getImageData(0,0,canvas.width,canvas.height).data.buffer).some(c => c !== 0); }
+  </script>
 </body>
 </html>
